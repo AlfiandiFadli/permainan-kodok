@@ -1,0 +1,20 @@
+#bungkus{
+    margin-left:50px;
+    margin-right:50px;
+}
+#judul{
+    margin-bottom:20px;
+    padding:5px;
+    background-color:rgb(1,1,1,0.5);
+}
+#isi{
+    float:right;
+}
+#sidebar{
+    float:left;
+    padding:20px;
+    width:30%;
+    height:500px;
+    background-color:rgb(1,1,1,0.3);
+    border-radius:20px;
+}

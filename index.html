@@ -1,0 +1,281 @@
+ <!DOCTYPE html>
+ <html lang="in">
+  <head>
+    <meta charset="utf-8">
+    <title>Permainan flappy bird</title>
+    <style>
+      #canvas{
+        border: 1px solid;
+        width: 800px;
+        height: 500px;
+      }
+    </style>
+    <link href="css/style.css" rel="stylesheet" type="text/css">
+  </head>
+  <body>
+      <div id="bungkus">
+          <div id="judul">
+             <center><font size="7" color="white" name="arial">Permainan Pangeran Kodok Terbang</font></center>
+          </div>
+          <div id="sidebar">
+              <br><br>
+              <center>
+                  <table cellpadding="10" border="0" bgcolor="white">
+                      <tr>
+                          <td align="center" colspan="2"><font size="5">Developer<hr></font></td>
+                      </tr>
+                      <tr>
+                          <td align="right">Nama :</td>
+                          <td align="left">Alfiandi Fadli</td>
+                      </tr>
+                      <tr>
+                          <td align="right">Asal Kampus :</td>
+                          <td align="left">Fakultas Teknik<br> Universitas Hamzanwadi</td>
+                      </tr>
+                      <tr>
+                          <td align="right">Program Studi :</td>
+                          <td align="left">Teknik Informatika</td>
+                      </tr>
+                      <tr>
+                          <td align="right">Semester :</td>
+                          <td align="left">IV</td>
+                      </tr>
+                 </table>
+              </center>
+          </div>
+          <div id="isi">
+            <canvas id="canvas">Browser anda tidak support canvas</canvas>
+        
+            <script type="text/javascript">
+        
+            var main=new Audio();
+            main.src="suara/main.mp3"
+        
+            var nilai=new Audio();
+            nilai.src="suara/skor.mp3"
+        
+            var loncat=new Audio();
+            loncat.src="suara/loncat.mp3"
+        
+            var mulai=new Audio();
+            mulai.src="suara/mulai.mp3"
+        
+            var akhir=new Audio();
+            akhir.src="suara/akhir.mp3"
+        
+            var nabrak=new Audio();
+            nabrak.src="suara/nabrak.mp3"
+        
+            var kodok1=new Image();
+            kodok1.src="gambar/kodoksatu.png";
+        
+            var kodok2=new Image();
+            kodok2.src="gambar/kodokdua.png";
+        
+            var judul=new Image();
+            judul.src="gambar/judul.png";
+        
+            var bg=new Image();
+            bg.src="gambar/bg.jpg";
+        
+            var gambarTiang=new Image();
+            gambarTiang.src="gambar/bambu.png";
+        
+            var mati=new Image();
+            mati.src="gambar/mati.png";
+        
+              function mulaiKanvas(){
+                var canvas= document.getElementById('canvas');
+                var ctx= canvas.getContext('2d');
+        
+                canvas.width=canvas.scrollWidth;
+                canvas.height=canvas.scrollHeight;
+        
+                var cW=canvas.width;
+                var cH=canvas.height;
+        
+                var bgX=0, start=false, z=100;
+        
+                function splash(){
+                  ctx.clearRect(0,0,cW,cH);
+                  ctx.drawImage(bg,bgX-=5,0);
+                  if(bgX==-1600){
+                    bgX=0;
+                  }
+        
+                  ctx.font="Bold 20px arial";
+                  ctx.fillText("KLIK untuk mulai",300,400);
+        
+                  ctx.drawImage(judul,150,10);
+        
+                  ctx.drawImage(kodok2,310,z+=2);
+                  if(z>=230){z=180;}
+                  mulai.play();
+                }
+                var inSplash=setInterval(splash,30);
+        
+                document.addEventListener('click',function(event){
+                  if(start==false){
+                    start=true;
+                    mulai.pause();
+                    clearInterval(inSplash);
+                    utama();
+                  }
+                });
+        
+                // utama();
+                function utama() {
+                  var gantiGambar=false;
+        
+                  //Untuk banckground berjalan
+                  function BG(){
+                    this.x=0;
+                    this.render=function(){
+                      ctx.drawImage(bg,this.x-=2,0);
+        
+                      if(this.x==-4800){
+                        this.x=0;
+                      }
+                    }
+                  }
+        
+                  var latar=new BG();
+        
+                  //Untuk karakter kodok terbang
+                  function Karakter(){
+                    this.x=100;this.y=200; this.w=135,this.h=100,this.i=0;
+                    this.render=function(){
+                      if(gantiGambar){
+                        ctx.drawImage(kodok1,this.x,this.y+=5);
+                        this.i++;
+                        if(this.i==7){
+                          gantiGambar=false;
+                          this.i=0;
+                        }
+                      }else{
+                        ctx.drawImage(kodok2,this.x,this.y+=5);
+                      }
+                     }
+                    }
+                    var karakter=new Karakter();
+                    this.i++;
+        
+                    //Mengatur Posisi Tiang
+                    var tiang=[];
+                    tambahTiang();
+                    function tambahTiang(){
+                      var x=800, y=-0, w=44, h=300;
+                      var acak=Math.floor(Math.random()*250);
+                      tiang.push({"x":x,"y":y-acak,"w":w,"h":h});
+                    }
+        
+                    var hitung=0;
+                    //Untuk kodok jika menabrak maka fungsi di selesai dijalankan
+                    function selesai(){
+                      clearInterval(interval);
+                      ctx.clearRect(0,0,cW,cW);
+                      latar.render();
+                      renderTiang();
+                      ctx.drawImage(mati,karakter.x+100,karakter.y+30);
+        
+                      nabrak.play();
+                      akhir.play();
+                      main.pause();
+        
+        
+                      ctx.font="Bold 55px arial";
+                      ctx.fillText("SELESAI",279,150);
+        
+                      ctx.font="Bold 50px arial";
+                      ctx.fillText("Skor Anda adalah : "+ skor,141,250);
+        
+                    }
+        
+                    var skor=0, tambahNilai=true;
+                    function tambahSkor(){
+                      skor++;
+                    }
+        
+                    //Tambrak tiang
+                    function kena(){
+                      for(var i = 0;i<tiang.length;i++){
+                        var t= tiang[i];
+                        if((karakter.x+karakter.w-29>t.x && karakter.y<t.y+t.h-40 && karakter.x<t.x+t.w)||
+                          (karakter.x+karakter.w>t.x+29 && karakter.y+karakter.h>t.y+t.h+202 && karakter.x<t.x+t.w)){
+                          selesai();
+                        }else if(t.x+t.w<karakter.x){
+                           if(tambahNilai){
+                            tambahSkor();
+                            tambahNilai=false;
+                            nilai.play();
+                          }
+                        }
+                      }
+                      if(karakter.y<=-40){selesai();}
+                      if(karakter.y+karakter.h>cH){selesai();}
+                    }
+        
+                    //Menampilkan Tiang
+                    function renderTiang(){
+                      for(var i=0;i<tiang.length;i++){
+                        var t=tiang[i];
+                        ctx.drawImage(gambarTiang,t.x-=2,t.y);
+                        ctx.drawImage(gambarTiang,t.x-=2,t.y+t.h+196);
+        
+                        if(t.x+t.w<0){
+                          tiang.splice(i,1);
+                          tambahNilai=true;
+                        }
+                      }
+                        hitung++;
+                        if(hitung==150){
+                          tambahTiang();
+                          hitung=0;
+                        }
+                    }
+        
+                    //Untuk mencetak mulai permainannya
+                    function animasi(){
+                      ctx.save();
+                      ctx.clearRect(0,0,cW,cH);
+        
+                      main.play();
+                      latar.render();
+                      karakter.render();
+                      renderTiang();
+        
+                      ctx.font="Normal 30px Arial";
+                      ctx.fillText("Skor : "+skor, 20,50);
+        
+        
+                      kena();
+        
+                      ctx.restore();
+        
+                  }
+        
+                  var interval= setInterval(animasi,30);
+        
+                  ctx.canvas.addEventListener('click',function(event){
+                    karakter.y-=70;
+                    gantiGambar=true;
+        	          loncat.play();
+                  });
+        
+                }//end fungsi utama
+        
+              }
+        
+              window.addEventListener('load',function(event){
+                mulaiKanvas();
+              });
+        
+            </script>
+            <form method="POST" action="#">
+                <input type="button" placeholder="Loncat">
+            </form>
+        </div>
+    </div>
+
+  </body>
+</html>
